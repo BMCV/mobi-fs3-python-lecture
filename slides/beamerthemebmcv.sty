@@ -214,18 +214,18 @@
 		\draw[bmcvBlue,line width=0.75pt] (0,39pt) -- (\the\paperwidth,39pt);
 		\node[anchor=south, text centered, text width=\the\paperwidth, text height=39pt] at (0.5\paperwidth,0) {
 			% use \raisebox{-0.5\height}{..} to vertically align logos:
-			\raisebox{-0.5\height}{\includegraphics[height=26pt]{Logos/uni-hd.jpeg}}
-			\hskip20.9pt
-			\raisebox{-0.5\height}{\includegraphics[height=29.7pt]{Logos/bq.png}}
-			\hskip13.2pt
-			\raisebox{-0.5\height}{\includegraphics[height=25.3pt]{Logos/ipmb.jpeg}}
+			\raisebox{-0.5\height}{\includegraphics[height=28pt]{Logos/uni-hd.png}}
+			\hskip17pt
+			\raisebox{-0.5\height}{\includegraphics[height=20pt]{Logos/bq.png}}
+			\hskip17pt
+			\raisebox{-0.5\height}{\includegraphics[height=27pt]{Logos/ipmb.png}}
 		};
 	\end{tikzpicture}
 }
 \defbeamertemplate{background canvas}{normal}{ % style for all slides except the title page
 	\begin{tikzpicture}
 		\useasboundingbox (0,0) rectangle (\the\paperwidth,\the\paperheight);
-		\node[anchor=center, opacity=0.35] at (41pt,11pt) {\includegraphics[width=44pt]{Logos/uni-hd-logo.png}};
+		\node[anchor=center, opacity=1] at (20pt,20pt) {\includegraphics[width=33pt]{Logos/uni-hd-logo.png}};
 		\node[anchor=center] at (0.5\paperwidth,10pt) {%
 			\usebeamerfont{footnote text}\usebeamercolor[fg]{footnote text}%
 			\ifx\beamer@shortauthor\empty%
