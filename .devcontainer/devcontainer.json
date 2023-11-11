@@ -4,20 +4,11 @@
     },
     "name": "latex-dev",
     "image": "ghcr.io/willfantom/devcontainer-latex:latest-small",
-    //"mounts": [
-    //    "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached"
-    //],
-    //"containerEnv": {
-    //    "GIT_SSH_COMMAND": "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
-    //},
+    "forwardPorts": [ 35556 ],
     "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
     "workspaceFolder": "/workspace",
-    //"features": {
-    //    "ghcr.io/rocker-org/devcontainer-features/apt-packages:1": {
-    //        "packages": "openssh-client"
-    //    }
-    //},
-    "postCreateCommand": "git submodule update --init && tlmgr install textpos multirow tabto-ltx adjustbox enumitem soul environ pythonhighlight keystroke && texhash",
+    //"postCreateCommand": "git submodule update --init && tlmgr install textpos multirow tabto-ltx adjustbox enumitem soul environ pythonhighlight keystroke && texhash",
+    "postCreateCommand": "tlmgr install textpos multirow tabto-ltx adjustbox enumitem soul environ pythonhighlight keystroke && texhash",
     "customizations": {
         "codespaces": {
             "openFiles": [
@@ -34,7 +25,7 @@
                 "files.autoSave": "onFocusChange",
                 "editor.formatOnSave": true,
                 // Latex Settings
-                // "latex-workshop.view.pdf.viewer": "tab",
+                "latex-workshop.viewer.pdf.internal.port": 35556,
                 "latex-workshop.latex.clean.subfolder.enabled": true,
                 "latex-workshop.latex.autoClean.run": "onBuilt",
                 "latex-workshop.latex.recipes": [
