@@ -7,7 +7,6 @@
     "image": "ghcr.io/willfantom/devcontainer-latex:latest-small",
     "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
     "workspaceFolder": "/workspace",
-    //"postCreateCommand": "git submodule update --init && tlmgr install textpos multirow tabto-ltx adjustbox enumitem soul environ pythonhighlight keystroke && texhash",
     "onCreateCommand": "git submodule update --init && tlmgr install textpos multirow tabto-ltx adjustbox enumitem soul environ pythonhighlight keystroke && texhash",
     "customizations": {
         "codespaces": {
