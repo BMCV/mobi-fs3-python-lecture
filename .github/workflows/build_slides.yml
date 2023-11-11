@@ -19,7 +19,7 @@ jobs:
           tag_name: ${{ github.ref_name }}
           delete_release: true
 
-  build_document_parts:
+  build_slides_and_release:
     runs-on: ubuntu-latest
     needs: ['delete_previous_release']
     steps:
@@ -34,6 +34,7 @@ jobs:
         with:
           root_file: slides.tex
           working_directory: slides
+          latexmk_use_xelatex: true
 
       - name: Create release
         id: create_release
