@@ -5,7 +5,7 @@
     "name": "latex-dev",
     "image": "ghcr.io/willfantom/devcontainer-latex:latest-small",
     "mounts": [
-        "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached"
+        "source=${localEnv:HOME}/.ssh,target=/root/.ssh,type=bind,consistency=cached"
     ],
     "containerEnv": {
         "GIT_SSH_COMMAND": "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
