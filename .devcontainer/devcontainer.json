@@ -3,7 +3,7 @@
     "image": "ghcr.io/willfantom/devcontainer-latex:latest-small",
     "workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace,type=bind,consistency=cached",
     "workspaceFolder": "/workspace",
-    "postCreateCommand": "tlmgr install textpos collection-latexextra && texhash",
+    "postCreateCommand": "tlmgr install textpos multirow && texhash",
     "customizations": {
         "vscode": {
             "extensions": [
