@@ -1,0 +1,404 @@
+\ProvidesPackage{beamerthemeBMCV}
+
+\mode<all>
+
+\RequirePackage{tikz}
+\RequirePackage[no-math]{fontspec}
+\RequirePackage{unicode-math}
+\RequirePackage{graphicx}
+\RequirePackage{calc} % needed for \ratio{}{} and others
+\RequirePackage{environ} % for \NewEnviron{..}
+\RequirePackage{array} % used to define legendbox environment
+
+%%% Define Fonts:
+\defaultfontfeatures{Ligatures=TeX}
+\setmainfont{cambria.ttc}[Path=Fonts/, FontIndex=0, BoldFont=cambriab.ttf, ItalicFont=cambriai.ttf, BoldItalicFont=cambriaz.ttf] % use Cambria as serif font
+\setsansfont{arial.ttf}[Path=Fonts/, BoldFont=arialbd.ttf, ItalicFont=ariali.ttf, BoldItalicFont=arialbi.ttf] % use Arial as sans font
+\setmonofont{consola.ttf}[Path=Fonts/, BoldFont=consolab.ttf, ItalicFont=consolai.ttf, BoldItalicFont=consolaz.ttf] % use Consolas as mono font
+\setmathfont{cambria.ttc}[Path=Fonts/, FontIndex=1, math-style=TeX] % use Cambria Math as math font
+\newfontfamily{\calibri}{calibri.ttf}[Path=Fonts/, BoldFont=calibrib.ttf, ItalicFont=calibrii.ttf, BoldItalicFont=calibriz.ttf] % Calibri is used in the footline (e.g. author, institute, page number)
+\newfontfamily{\wingdings}{wingding.ttf}[Path=Fonts/] % for the ugly arrows from MS Word (see \MSrightarrow below)
+
+%%% Define Colors:
+\definecolor{bmcvBlack}{RGB}{0,0,0} % for text
+\definecolor{bmcvWhite}{RGB}{255,255,255} % for background
+\definecolor{bmcvBlue}{RGB}{21,74,160} % for titles and alerted text
+\definecolor{bmcvGreen}{RGB}{59,175,41} % additional color for emphasized text
+\definecolor{bmcvLightGray}{RGB}{242,242,242} % background color for emphasized equations
+\definecolor{bmcvGray}{RGB}{228,232,234} % background color for a 'variables table' box
+\definecolor{bmcvDarkGray}{RGB}{122,140,149} % for gray text, e.g. the footline in each frame
+
+%%% Set Colors: 		%%% TODO: Extend %%%
+\setbeamercolor{title}{fg=bmcvBlue, bg=bmcvWhite}
+\setbeamercolor{author}{fg=bmcvBlack, bg=bmcvWhite}
+\setbeamercolor{institute}{fg=bmcvBlack, bg=bmcvWhite}
+\setbeamercolor{date}{fg=bmcvBlack, bg=bmcvWhite}
+\setbeamercolor{frametitle}{fg=bmcvBlue, bg=bmcvWhite}
+\setbeamercolor{footnote text}{fg=bmcvDarkGray, bg=bmcvWhite}
+\setbeamercolor{itemize item}{fg=bmcvBlack, bg=bmcvWhite}
+\setbeamercolor{itemize subitem}{fg=bmcvBlack, bg=bmcvWhite}
+\setbeamercolor{itemize subsubitem}{fg=bmcvBlack, bg=bmcvWhite}
+\setbeamercolor{enumerate item}{fg=bmcvBlack, bg=bmcvWhite}
+\setbeamercolor{enumerate subitem}{fg=bmcvBlack, bg=bmcvWhite}
+\setbeamercolor{enumerate subsubitem}{fg=bmcvBlack, bg=bmcvWhite}
+\setbeamercolor{itemize/enumerate body}{fg=bmcvBlack, bg=bmcvWhite}
+\setbeamercolor{itemize/enumerate subbody}{fg=bmcvBlack, bg=bmcvWhite}
+\setbeamercolor{itemize/enumerate subsubbody}{fg=bmcvBlack, bg=bmcvWhite}
+\setbeamercolor{alerted text}{fg=bmcvBlue}
+\setbeamercolor{section in toc}{fg=bmcvBlue}
+\setbeamercolor{section in toc shaded}{fg=bmcvBlack}
+\setbeamercolor{normal text}{fg=bmcvBlack, bg=bmcvWhite}
+\setbeamercolor{block title}{fg=bmcvBlue, bg=bmcvGray}
+\setbeamercolor{block body}{fg=bmcvBlack, bg=bmcvLightGray}
+%\setbeamercolor{math text inlined}{fg=bmcvBlack}
+%\setbeamercolor{math text displayed}{fg=bmcvBlack}
+\setbeamercolor{legend box}{fg=bmcvBlack, bg=bmcvGray}
+\setbeamercolor{highlight box}{fg=bmcvBlack, bg=bmcvLightGray}
+\setbeamercolor{bibliography entry author}{fg=bmcvBlack, bg=bmcvWhite}
+\setbeamercolor{bibliography entry title}{fg=bmcvBlue, bg=bmcvWhite}
+\setbeamercolor{bibliography entry location}{fg=bmcvDarkGray, bg=bmcvWhite}
+\setbeamercolor{bibliography entry note}{fg=bmcvBlack, bg=bmcvWhite}
+\setbeamercolor{bibliography item}{fg=bmcvBlack, bg=bmcvWhite}
+
+%%% Define sizes (TODO):
+\newdimen{\bmcv@PP@paperheight}
+\newdimen{\bmcv@PP@skip} % skip length which correspond to 10pt in PowerPoint
+\setlength{\bmcv@PP@paperheight}{7.5in} % in PowerPoint both 16:9 and 4:3 have height 7.5in
+\setlength{\bmcv@PP@skip}{10pt*\ratio{\beamer@paperheight}{\bmcv@PP@paperheight}}
+%\newdimen{\bmcv@normalsize@size}
+%\newdimen{\bmcv@normalsize@skip}
+%\setlength{\bmcv@normalsize@size}{22pt*\ratio{\beamer@paperheight}{\bmcv@PP@paperheight}}
+%\setlength{\bmcv@normalsize@skip}{31.68pt*\ratio{\beamer@paperheight}{\bmcv@PP@paperheight}} % 31.68pt = 22pt * 1.2 * 1.2
+%\renewcommand{\normalsize}{\fontsize{\bmcv@normalsize@size}{\bmcv@normalsize@skip}\selectfont}
+
+%%% Define Font Sizes: 		%%% TODO: Set font size dynamically (instead of fixed computed values); also handle the 4:3 case %%%
+%%% Computation of the font size:
+%	paper size for 4:3 in PowerPoint: 10in x 7.5in
+%	paper size for 4:3 in beamer: 12.8cm x 9.6cm
+%		---> downscale factor of 1.984375 (for 4:3)
+% 	paper size for 16:9 in PowerPoint: 13.333in x 7.5in
+% 	paper size for 16:9 in beamer: 16cm x 9cm
+% 		---> downscale factor of 2.11667 (for 16:9)
+%	simple line skip = 1.2 * font size
+% -> \fontsize{size}{baselineskip} is set by (only for 16:9):
+% 		size = (size in PP) / 2.11667
+% 		baselineskip = { (size in PP) * 1.2 * (line skip factor in PP) + (line skip space in PP) } / 2.11667
+\renewcommand{\Huge}{\fontsize{20,787pt}{29,934pt}\selectfont} % = 40pt, 1.2 line skip factor
+\renewcommand{\huge}{\fontsize{18.898pt}{27,213pt}\selectfont} % = 40pt, 1.2 line skip factor
+\renewcommand{\LARGE}{\fontsize{17.008pt}{24.491pt}\selectfont} % = 36pt, 1.2 line skip factor
+\renewcommand{\Large}{\fontsize{15.118pt}{21.77pt}\selectfont} % = 32pt, 1.2 line skip factor
+\renewcommand{\large}{\fontsize{13.228pt}{19.049pt}\selectfont} % = 28pt, 1.2 line skip factor
+\renewcommand{\normalsize}{
+	\fontsize{10.394pt}{14.967pt}\selectfont % = 22pt, 1.2 line skip factor
+	% also set distance to displayed equations:
+	\abovedisplayskip=0.9ex
+	\belowdisplayskip=1.8ex
+	\abovedisplayshortskip=0.9ex % space between text and equation (above)
+	\belowdisplayshortskip=1.8ex % space between text and equation (below)
+}
+\renewcommand{\small}{\fontsize{9.449pt}{13.606pt}\selectfont} % = 20pt, 1.2 line skip factor
+\renewcommand{\footnotesize}{\fontsize{8.504pt}{12.246pt}\selectfont} % = 18pt, 1.2 line skip factor
+\renewcommand{\scriptsize}{\fontsize{6.614pt}{9.524pt}\selectfont} % = 14pt, 1.2 line skip factor
+\renewcommand{\tiny}{\fontsize{4.724pt}{6.803pt}\selectfont} % = 10pt, 1.2 line skip factor
+
+%%% Set Fonts: 		%%% TODO: Extend %%%
+\setbeamerfont{title}{shape=\bfseries, size=\LARGE}
+\setbeamerfont{subtitle}{shape=\mdseries\upshape, size=\fontsize{14.173pt}{17.008pt}} % = 30pt, 1.0 line skip factor
+\setbeamerfont{author}{shape=\mdseries\upshape, size=\fontsize{13.228pt}{19.011pt}} % = 28pt, 0.9 line skip factor + 10pt skip
+\setbeamerfont{institute}{shape=\mdseries\upshape, size=\fontsize{9.449pt}{14.929pt}} % = 20pt, 0.9 line skip factor + 10pt skip
+\setbeamerfont{frametitle}{shape=\bfseries, size=\fontsize{13.228pt}{14.287pt}} % = 28pt, 0.9 line skip factor
+\setbeamerfont{footnote text}{family=\calibri, size=\fontsize{6.614pt}{7.937pt}} % = 14pt, 1.0 line skip factor
+\setbeamerfont{itemize item}{size=\normalsize}
+\setbeamerfont{itemize subitem}{size=\small}
+\setbeamerfont{itemize subsubitem}{size=\footnotesize}
+\setbeamerfont{enumerate item}{size=\normalsize}
+\setbeamerfont{enumerate subitem}{size=\small}
+\setbeamerfont{enumerate subsubitem}{size=\footnotesize}
+\setbeamerfont{itemize/enumerate body}{size=\normalsize}
+\setbeamerfont{itemize/enumerate subbody}{size=\small}
+\setbeamerfont{itemize/enumerate subsubbody}{size=\footnotesize}
+\setbeamerfont{alerted text}{shape=\bfseries}
+\setbeamerfont{section in toc}{size=\normalsize, shape=\bfseries}
+\setbeamerfont{section in toc shaded}{size=\normalsize, shape=\bfseries}
+\setbeamerfont{normal text}{size=\normalsize}
+\setbeamerfont{block title}{shape=\bfseries, size=\normalsize}
+\setbeamerfont{block body}{size=\normalsize}
+\setbeamerfont{bibliography entry author}{size=\normalsize, shape=\mdseries\upshape}
+\setbeamerfont{bibliography entry title}{size=\normalsize, shape=\bfseries}
+\setbeamerfont{bibliography entry location}{size=\normalsize, shape=\mdseries\itshape}
+\setbeamerfont{bibliography entry note}{size=\small, shape=\mdseries\itshape}
+\setbeamerfont{bibliography item}{size=\normalsize}
+
+%%% Set Sizes:		%%% TODO: Extend %%%
+\setbeamersize{text margin left=0.09\paperwidth}
+\setbeamersize{text margin right=0.09\paperwidth}
+\setbeamersize{sidebar width left=0pt}
+\setbeamersize{sidebar width right=0pt}
+
+%%% Set the itemize/enumerate items:
+\setbeamertemplate{itemize items}{\textbullet}
+%\setbeamertemplate{itemize item}{\bullet}
+%\setbeamertemplate{itemize subitem}{\bullet}
+%\setbeamertemplate{itemize subsubitem}{\bullet}
+\setbeamertemplate{enumerate item}{\insertenumlabel.} % this is actually not used since the enumerate environment will be redefined below...
+\setbeamertemplate{enumerate subitem}{\insertenumlabel.\insertsubenumlabel}
+\setbeamertemplate{enumerate subsubitem}{\insertenumlabel.\insertsubenumlabel.\insertsubsubenumlabel}
+%\setbeamertemplate{bibliography entry author}{}
+%\setbeamertemplate{bibliography entry title}{}
+%\setbeamertemplate{bibliography entry location}{}
+%\setbeamertemplate{bibliography entry note}{}
+
+%% draw a scientific paper with tikz and use it as bib item:
+\newcommand{\bmcv@bibitem}{%
+	\begin{tikzpicture}[baseline=0.1em, x=0.1em, y=0.1em]
+		\def\wid{7.071} % width of paper (height = 10)
+		\draw[line width=0.6pt, bmcvBlue] (1, 8.5) -- (0.75*\wid, 8.5); % draw title
+		\foreach \y in {7.25, 6.25}
+			\draw[bmcvDarkGray] (0.25*\wid, \y) -- (0.75*\wid, \y); % draw abstract;
+		\foreach \y in {1, 2, 3, 4, 5}
+			\draw[bmcvDarkGray] (0.9,\y) -- (0.5*\wid-0.4,\y); %draw left column
+		\shade[top color=bmcvBlue, bottom color=bmcvGreen] (0.5*\wid+0.4, 5.2) rectangle (\wid-0.9, 1.8); % draw figure
+		\draw[bmcvDarkGray] (0.5*\wid+0.4, 1) -- (\wid-0.9, 1); % draw last line in right column
+		\fill[bmcvGray] (\wid-2,10) -- (\wid-2,8) -- (\wid,8) -- cycle; % draw shade of folded corner
+		\draw (\wid-2,10) -- (\wid-2,8) -- (\wid,8); % draw folded corner
+		\draw (0,0) -- (0,10) -- (\wid-2,10) -- (\wid,8) -- (\wid,0) -- cycle; % draw paper
+	\end{tikzpicture}
+}%
+\defbeamertemplate{bibliography item}{paper}{\bmcv@bibitem} % set option for paper icon
+\setbeamertemplate{bibliography item}[paper] % set paper option as default
+
+
+%%% Disable Navigation:
+\setbeamertemplate{navigation symbols}{}
+
+%%% Customize Title page (only the text; background is defined below):
+\setbeamertemplate{title page}{
+	\begin{center}
+		\vfill%
+		{\usebeamerfont{title}\usebeamercolor[fg]{title}\inserttitle\par}% Title
+		\ifx\insertsubtitle\empty%
+		\vfill%
+		\else%
+    		{\usebeamerfont{subtitle}\usebeamercolor[fg]{subtitle}\vskip0.5ex\insertsubtitle\par}\vfill% Subtitle
+    		\fi%
+		\ifx\beamer@author\empty%
+		\else%
+		{\usebeamerfont{author}\usebeamercolor[fg]{author}\insertauthor\par}\vfill% Authors
+		\fi%
+		\ifx\beamer@institute\empty%
+		\else%
+		{\usebeamerfont{institute}\usebeamercolor[fg]{institute}\insertinstitute\par}\vfill% Institute
+		\fi%
+		\ifx\beamer@date\empty%
+		\else%
+		{\usebeamerfont{date}\usebeamercolor[fg]{date}\insertdate\par}\vfill% Date
+		\fi%
+		\vskip0.87cm%
+	\end{center}
+}
+
+%%% Customize the title of frames:
+\setbeamertemplate{frametitle}{
+	\begin{center}
+		\vskip0.5ex
+		\insertframetitle
+		\vspace{-2.25ex} % TODO: Is there a beamer option instead using this hack?
+	\end{center}
+}
+
+%%% Define Slide Backgrounds (Styles): 
+\defbeamertemplate{background canvas}{title}{
+	\begin{tikzpicture}
+		\useasboundingbox (0,0) rectangle (\the\paperwidth,\the\paperheight);
+		\fill[bmcvBlue] (0,\the\paperheight-3.3pt) rectangle (\the\paperwidth,\the\paperheight);
+		\draw[bmcvBlue,line width=0.75pt] (0,39pt) -- (\the\paperwidth,39pt);
+		\node[anchor=south, text centered, text width=\the\paperwidth, text height=39pt] at (0.5\paperwidth,0) {
+			% use \raisebox{-0.5\height}{..} to vertically align logos:
+			\raisebox{-0.5\height}{\includegraphics[height=26pt]{Logos/uni-hd.jpeg}}
+			\hskip20.9pt
+			\raisebox{-0.5\height}{\includegraphics[height=29.7pt]{Logos/bq.png}}
+			\hskip13.2pt
+			\raisebox{-0.5\height}{\includegraphics[height=25.3pt]{Logos/ipmb.jpeg}}
+			\hskip8.8pt
+			\raisebox{-0.5\height}{\includegraphics[height=26pt, trim=80px 45px 0px 0px, clip]{Logos/dkfz.png}}
+		};
+	\end{tikzpicture}
+}
+\defbeamertemplate{background canvas}{normal}{ % style for all slides except the title page
+	\begin{tikzpicture}
+		\useasboundingbox (0,0) rectangle (\the\paperwidth,\the\paperheight);
+		\node[anchor=center, opacity=0.35] at (41pt,11pt) {\includegraphics[width=44pt]{Logos/uni-hd-logo.png}};
+		\node[anchor=center] at (0.5\paperwidth,10pt) {%
+			\usebeamerfont{footnote text}\usebeamercolor[fg]{footnote text}%
+			\ifx\beamer@shortauthor\empty%
+			\insertshortinstitute%
+			\else%
+			\insertshortauthor%
+			\ifx\beamer@shortinstitute\empty%
+			\else%
+			, \insertshortinstitute%
+			\fi%
+			\fi%
+		};
+		\node[anchor=east] at (\the\paperwidth-27.5pt,10pt) {\usebeamerfont{footnote text}\usebeamercolor[fg]{footnote text}\insertframenumber};
+	\end{tikzpicture}
+}
+\defbeamertemplate{background canvas}{nologo}{ % same as 'normal' but without the logo
+	\begin{tikzpicture}
+		\useasboundingbox (0,0) rectangle(\the\paperwidth,\the\paperheight);
+		\node[anchor=center] at (0.5\paperwidth,10pt) {%
+			\usebeamerfont{footnote text}\usebeamercolor[fg]{footnote text}%
+			\ifx\beamer@shortauthor\empty%
+			\insertshortinstitute%
+			\else%
+			\insertshortauthor%
+			\ifx\beamer@shortinstitute\empty%
+			\else%
+			, \insertshortinstitute%
+			\fi%
+			\fi%
+		};
+		\node[anchor=east] at (\the\paperwidth-27.5pt,10pt) {\usebeamerfont{footnote text}\usebeamercolor[fg]{footnote text}\insertframenumber};
+	\end{tikzpicture}
+}
+
+%%% Set Default Slide Background:
+\BeforeBeginEnvironment{frame}{%
+  \setbeamertemplate{background canvas}[normal]%
+}
+
+%%% Add options for other backgrounds:
+\define@key{beamerframe}{title}[true]{%
+  \setbeamertemplate{background canvas}[title]%
+}
+\define@key{beamerframe}{normal}[true]{%
+  \setbeamertemplate{background canvas}[normal]%
+}
+\define@key{beamerframe}{nologo}[true]{%
+  \setbeamertemplate{background canvas}[nologo]%
+}
+\define@key{beamerframe}{plain}[true]{%
+  \setbeamertemplate{background canvas}[default]%
+}
+
+%%% Redefine itemize/enumerate (in order to set alignment as desired):
+\RequirePackage{enumitem} % using this package redefine the itemize environment, i.e., beamer's overlay (e.g. \item<2->) does not work anymore. Use \only<2->{\item ...} instead.
+\setlist[itemize,1]{%
+    label=\usebeamertemplate{itemize item},%
+    font=\usebeamerfont{itemize item}\usebeamercolor[fg]{itemize item},%
+    before={\usebeamerfont{itemize/enumerate body}\usebeamercolor[fg]{itemize/enumerate body}},%
+    labelindent=0pt,%
+    labelsep=0.45em,%
+    itemindent=*,%
+    leftmargin=*,%
+    itemsep=\bmcv@PP@skip,% = 10pt / 2.11667
+    topsep=\bmcv@PP@skip,%
+}
+\setlist[itemize,2]{%
+    label=\usebeamertemplate{itemize subitem},%
+    font=\usebeamerfont{itemize subitem}\usebeamercolor[fg]{itemize subitem},%
+    before={\usebeamerfont{itemize/enumerate subbody}\usebeamercolor[fg]{itemize/enumerate subbody}},%
+    labelindent=0.75em,%
+    itemindent=*,%
+    leftmargin=*,%
+    itemsep=0.5\bmcv@PP@skip,% = 5pt / 2.11667
+    topsep=0.5\bmcv@PP@skip,%
+}
+\setlist[itemize,3]{%
+    label=\usebeamertemplate{itemize subsubitem},%
+    font=\usebeamerfont{itemize subsubitem}\usebeamercolor[fg]{itemize subsubitem},%
+    before={\usebeamerfont{itemize/enumerate subsubbody}\usebeamercolor[fg]{itemize/enumerate subsubbody}},%
+    labelindent=0.75em,%
+    itemindent=*,%
+    leftmargin=*,%
+    itemsep=0pt,%
+    topsep=0pt,%
+}
+\setlist[enumerate,1]{%
+    label={\insertenumlabel.},%
+    font=\usebeamerfont{enumerate item}\usebeamercolor[fg]{enumerate item},%
+    before={\usebeamerfont{itemize/enumerate body}\usebeamercolor[fg]{itemize/enumerate body}},%
+    labelindent=0pt,%
+    labelsep=0.75em,%
+    itemindent=*,%
+    leftmargin=*,%
+    leftmargin=*,%
+    itemsep=\bmcv@PP@skip,% = 10pt / 2.11667
+    topsep=\bmcv@PP@skip,%
+}
+\setlist[enumerate,2]{%
+    label*=\insertsubenumlabel,%
+    font=\usebeamerfont{enumerate subitem}\usebeamercolor[fg]{enumerate subitem},%
+    before={\usebeamerfont{itemize/enumerate subbody}\usebeamercolor[fg]{itemize/enumerate subbody}},%
+    labelindent=0.75em,%
+    labelsep=0.65em,%
+    itemindent=*,%
+    leftmargin=*,%
+    itemsep=0.5\bmcv@PP@skip,% = 5pt / 2.11667
+    topsep=0.5\bmcv@PP@skip,%
+}
+\setlist[enumerate,3]{%
+    label*={.\insertsubsubenumlabel},%
+    font=\usebeamerfont{enumerate subsubitem}\usebeamercolor[fg]{enumerate subsubitem},%
+    before={\usebeamerfont{itemize/enumerate subsubbody}\usebeamercolor[fg]{itemize/enumerate subsubbody}},%
+    labelindent=0.75em,%
+    labelsep=0.5em,%
+    itemindent=*,%
+    leftmargin=*,%
+    itemsep=0pt,%
+    topsep=0pt,%
+}
+
+%%% Define legendbox environment (for explaining variables):
+\NewEnviron{legendbox}[2][0cm]{%
+	\hfill%
+	\raisebox{#2}{%
+		\setlength{\fboxsep}{1pt}%
+		\makebox(0,0)[r]{% use a box without vertical space in order to not fuck up the alignment of the rest of the slide
+			\colorbox{bmcvGray}{%
+				\small%
+				\begin{math}%
+					\begin{array}{@{\hskip3pt}c@{\hskip2pt}>{:}l@{\hskip3pt}}% use array environment for structuring ("Var : Text")
+						\BODY% the environment body (e.g. "A & \textrm{matrix} \\ b & \textrm{vector}")
+					\end{array}%
+				\end{math}%
+			}%
+			\hspace{#1}
+		}%
+	}%
+	\par%
+	\vspace{#2}%
+	%\vspace{-3.168\bmcv@PP@skip}%
+}
+
+%%% Defines highlighted equations:
+\NewEnviron{boxedeq}{% highlight a (displayed) equation with a gray box
+	\begin{displaymath}%
+		\colorbox{bmcvLightGray}{%
+			\normalsize%
+			\begin{math}%
+				\displaystyle%
+				\begin{aligned}%
+					\BODY%
+				\end{aligned}%
+			\end{math}%
+		}%
+	\end{displaymath}%
+}
+\NewEnviron{boxedeq*}{% same as above but inline math (with aligned)
+	\colorbox{bmcvLightGray}{%
+		\normalsize%
+		\begin{math}%
+			\displaystyle%
+			\begin{aligned}%
+				\BODY%
+			\end{aligned}%
+		\end{math}%
+	}%
+}
+
+% Define arrows from MS Word (just a few):
+\newcommand{\MSleftarrow}{{\wingdings\char 983237}}
+\newcommand{\MSrightarrow}{{\wingdings\char 983238}}
+\newcommand{\MSLeftarrow}{{\wingdings\char 983245}}
+\newcommand{\MSRightarrow}{{\wingdings\char 983246}}
