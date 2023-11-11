@@ -3,8 +3,9 @@
     "image": "ghcr.io/willfantom/devcontainer-latex:latest-small",
     "workspaceMount": "source=${localWorkspaceFolder}/slides,target=/workspace,type=bind,consistency=cached",
     "workspaceFolder": "/workspace",
-    "postCreateCommand": "tlmgr install textpos multirow tabto-ltx adjustbox enumitem soul environ && texhash",
+    "postCreateCommand": "tlmgr install textpos multirow tabto-ltx adjustbox enumitem soul environ pythonhighlight && texhash",
     "customizations": {
+        "codespaces.openFiles": ["slides.tex"],
         "vscode": {
             "extensions": [
                 "james-yu.latex-workshop"
