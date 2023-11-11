@@ -2,13 +2,14 @@
     "hostRequirements": {
         "cpus": 4
     },
+    "forwardPorts": [ 35556 ],
     "name": "latex-dev",
     "image": "ghcr.io/willfantom/devcontainer-latex:latest-small",
     "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
     "workspaceFolder": "/workspace",
-    "postCreateCommand": "git submodule update --init && tlmgr install textpos multirow tabto-ltx adjustbox enumitem soul environ pythonhighlight keystroke && texhash",
+    //"postCreateCommand": "git submodule update --init && tlmgr install textpos multirow tabto-ltx adjustbox enumitem soul environ pythonhighlight keystroke && texhash",
+    "onCreateCommand": "git submodule update --init && tlmgr install textpos multirow tabto-ltx adjustbox enumitem soul environ pythonhighlight keystroke && texhash",
     "customizations": {
-        "forwardPorts": [ 35556 ],
         "codespaces": {
             "openFiles": [
                 "slides/slides.tex"
@@ -19,14 +20,7 @@
                 "james-yu.latex-workshop"
             ],
             "settings": {
-                // General Settings
-                "files.eol": "\n",
-                "files.autoSave": "onFocusChange",
-                "editor.formatOnSave": true,
-                // Latex Settings
                 "latex-workshop.viewer.pdf.internal.port": 35556,
-                "latex-workshop.latex.clean.subfolder.enabled": true,
-                "latex-workshop.latex.autoClean.run": "onBuilt",
                 "latex-workshop.latex.recipes": [
                     {
                         "name": "latexmk (xelatex)",
@@ -34,17 +28,7 @@
                             "xelatexmk"
                         ]
                     }
-                ],
-                "[latex]": {
-                    "editor.formatOnPaste": false,
-                    "editor.wordWrap": "on",
-                    "cSpell.showAutocompleteSuggestions": true,
-                    "rewrap.autoWrap.enabled": true
-                },
-                "ltex.ltex-ls.path": "/usr/share/ltex-ls",
-                "ltex.java.path": "/usr/lib/jvm/default-java",
-                "languageTool.language": "en",
-                "languageTool.enabled": true
+                ]
             }
         }
     }
