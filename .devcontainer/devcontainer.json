@@ -2,10 +2,8 @@
     "hostRequirements": {
         "cpus": 4
     },
-    "image": "mcr.microsoft.com/devcontainers/typescript-node",
-	"forwardPorts": [3000],
-	"customizations": {
-	},
+    "name": "latex-dev",
+    "image": "ghcr.io/willfantom/devcontainer-latex:latest-small",
     "mounts": [
         "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached"
     ],
@@ -19,7 +17,7 @@
             "packages": "openssh-client"
         }
     },
-    "postCreateCommand": "git submodule update --recursive --init",
+    "postCreateCommand": "git submodule update --recursive --init && tlmgr install textpos multirow tabto-ltx adjustbox enumitem soul environ pythonhighlight keystroke && texhash",
     "customizations": {
         "codespaces": {
             "openFiles": [
@@ -27,9 +25,8 @@
             ]
         },
         "vscode": {
-			"extensions": [
-				"EdwinKofler.vscode-hyperupcall-pack-core",
-				"EdwinKofler.vscode-hyperupcall-pack-latex"
+            "extensions": [
+                "james-yu.latex-workshop"
             ],
             "settings": {
                 // General Settings
