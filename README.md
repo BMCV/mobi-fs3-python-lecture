@@ -1,6 +1,6 @@
 [![Build slides.pdf document](https://github.com/BMCV/mobi-fs3-python-lecture/actions/workflows/build_slides.yml/badge.svg)](https://github.com/BMCV/mobi-fs3-python-lecture/actions/workflows/build_slides.yml)
 
-# [Molecular Biotechnology, Methoden der Bioinformatik, Python-Praktikum, Lecture]()
+# [Methoden der Bioinformatik, Python-Praktikum, Lecture]()
 
 **Steps to update the slides:**
 1. Fork this repository
