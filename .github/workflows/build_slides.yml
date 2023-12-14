@@ -4,12 +4,17 @@ on:
   push:
     paths:
       - 'slides/**'
-      - '.github/workflows/*.yml'
+      - '.github/workflows/build_slides.yml'
+  pull_request:
+    branches:
+      - 'current'
+      - 'future-*'
 
 jobs:
 
   delete_previous_release:
     runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
     steps:
 
       - name: Delete previous release (if any)
@@ -19,9 +24,8 @@ jobs:
           tag_name: ${{ github.ref_name }}
           delete_release: true
 
-  build_slides_and_release:
+  build_slides:
     runs-on: ubuntu-latest
-    needs: ['delete_previous_release']
     steps:
 
       - name: Initialize
@@ -29,12 +33,27 @@ jobs:
         with:
           submodules: true
 
-      - name: Build LaTeX document parts
+      - name: Build LaTeX document
         uses: xu-cheng/latex-action@v2
         with:
           root_file: slides.tex
           working_directory: slides
           latexmk_use_xelatex: true
+
+      - name: Upload PDF artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: slides.pdf
+          path: slides/slides.pdf
+
+  create_release:
+    runs-on: ubuntu-latest
+    needs: ['delete_previous_release', 'build_slides']
+    if: github.event_name != 'pull_request'
+    steps:
+
+      - name: Download sources and LaTeX document parts
+        uses: actions/download-artifact@v3
 
       - name: Create release
         id: create_release
