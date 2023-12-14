@@ -32,3 +32,4 @@ jobs:
           commit_message: 'Initialize future branch'
           create_branch: true
           commit_options: '--allow-empty'
+          skip_dirty_check: true
