@@ -1,0 +1,34 @@
+name: Create future branch
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 1 9 *'
+
+jobs:
+
+  create_future_branch:
+
+    name: Create future branch
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'BMCV'
+
+    permissions:
+      contents: write
+
+    steps:
+
+      - name: Initialize
+        uses: actions/checkout@v2
+
+      - name: Create and initialize future branch
+        run: echo "branch=$(python .github/create-future-branch.py)" >> $GITHUB_OUTPUT
+        id: create_branch
+
+      - name: Commit and push
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          branch: ${{ steps.create_branch.outputs.branch }}
+          commit_message: 'Initialize future branch'
+          create_branch: true
+          commit_options: '--allow-empty'
