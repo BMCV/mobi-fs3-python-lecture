@@ -12,13 +12,9 @@ on:
 
 jobs:
 
-  initialize:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' || github.ref_name == 'current' || startsWith(github.ref_name, 'future-')
-
   build_slides:
     runs-on: ubuntu-latest
-    needs: ['initialize']
+    if: github.event_name == 'pull_request' || github.ref_name == 'current' || startsWith(github.ref_name, 'future-')
     permissions: write-all
     steps:
 
