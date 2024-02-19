@@ -25,6 +25,7 @@ jobs:
 
       - uses: kostrykin/build-latex-document-action@master
         with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           working_directory: slides
           document_filename: slides.pdf
           sources: slides.tex
