@@ -23,7 +23,7 @@ jobs:
         with:
           submodules: true
 
-      - uses: kostrykin/build-latex-document-action@master
+      - uses: kostrykin/build-latex-document-action@v1.1.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           working_directory: slides
